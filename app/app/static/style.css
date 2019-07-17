@@ -1,0 +1,27 @@
+.column-3 {
+    float: left;
+    width: 33.33%;
+}
+
+.column-2 {
+    float: left;
+    width: 50%;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.ok {
+    color: green;
+}
+
+.fail {
+    color: red;
+}
+
+.warn {
+    color: orange;
+}

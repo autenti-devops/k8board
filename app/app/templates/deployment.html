@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ deployment.name }}{% endblock %}
+
+{% block content %}
+    <h1>Deployment {{ deployment.name }}:</h1>
+
+    <div class="row">
+        {% if deployment.correctness == '100%' %}
+            <p><b>Correctness:</b> <span class="ok">{{ deployment.correctness }}</span></p>
+        {% elif deployment.correctness == '0%' %}
+            <p><b>Correctness:</b> <span class="fail">{{ deployment.correctness }}</span></p>
+        {% else %}
+            <p><b>Correctness:</b> <span class="warn">{{ deployment.correctness }}</span></p>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="column-2">
+            <ul>
+                <li>Desired replicas: {{ deployment.desired_replicas }} </li>
+                <li>Existing replicas: {{ deployment.existing_replicas }} </li>
+                <li>Available replicas: {{ deployment.available_replicas }} </li>
+            </ul>
+        </div>
+        <div class="column-2">
+            <ul>
+                <li>Ready replicas: {{ deployment.ready_replicas }} </li>
+                <li>Unavailable replicas: {{ deployment.unavailable_replicas }} </li>
+                <li>Updated replicas: {{ deployment.updated_replicas }} </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column-2">
+            <p><b>Selectors:</b></p>
+            {% for s in deployment.selector %}
+                <p>{{ s }} : {{ deployment.selector[s] }}</p>
+            {% endfor %}
+        </div>
+        <div class="column-2">
+            {% if deployment.labels != None %}
+                <p><b>Labels:</b></p>
+                {% for l in deployment.labels %}
+                    <p>{{ l }} : {{ deployment.labels[l] }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <p>Conditions: </p>
+        <ul>
+            {% for dc in deployment.conditions %}
+                {% if dc.status == 'True' %}
+                    <li><b>Type:</b> {{ dc.type }} <b>Status:</b> <span class="ok">OK</span>
+                        <b>Reason:</b> {{ dc.reason }},
+                        <b>Message:</b> {{ dc.message }}</li>
+                {% else %}
+                    <li><b>Type:</b> {{ dc.type }} <b>Status:</b> <span class="fail">FAIL</span>
+                        <b>Reason:</b> {{ dc.reason }}, <b>Message:</b> {{ dc.message }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="row">
+        <p>Replica Sets:</p>
+        <ul>
+            {% for rs in deployment.replica_sets %}
+                <li>
+                    {{ rs.name }} : {{ rs.available_replicas }}/{{ rs.desired_replicas }}
+                    {% if rs.pods %}
+                        <br/>
+                        Pods:
+                        <ul>
+                            {% for p in rs.pods %}
+                                <li>
+                                    <a href="{{ url_for('home.pod', namespace_name = namespace_name, pod_name = p.name) }}">{{ p.name }}</a>
+                                    : {{ p.phase }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

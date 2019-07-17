@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ ingress.name }}{% endblock %}
+
+{% block content %}
+    <h1>Ingress {{ ingress.name }}:</h1>
+    <div class="row">
+        <p>Rules:</p>
+        <ul>
+            {% for r in ingress.rules %}
+                <li>
+                    Host: {{ r.host }}
+                    {% if r.paths %}
+                        <ul>
+                            {% for p in r.paths %}
+                                <li>{{ p.path }} -> <a
+                                        href="{{ url_for('home.service', namespace_name = namespace_name, service_name = p.service_name) }}">{{ p.service_name }}</a>:{{ p.service_port }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <br/>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="row">
+        {% if ingress.labels != None %}
+            <p><b>Labels:</b></p>
+            {% for l in ingress.labels %}
+                <p>{{ l }} : {{ ingress.labels[l] }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}
