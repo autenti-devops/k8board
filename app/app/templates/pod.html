@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ pod.name }}{% endblock %}
+
+{% block content %}
+    <h1>Pod {{ pod.name }}:</h1>
+    <form method="post" action="{{ url_for('home.pod', namespace_name=namespace_name, pod_name=pod.name) }}">
+        <input type="submit" value="Delete POD" onclick="return confirm('Are you sure you want to delete this pod?');">
+    </form>
+
+    <div class="row">
+        <div class="column-2">
+            {% if pod.phase == 'Running' %}
+                <p>Phase: <span class="ok">{{ pod.phase }}</span></p>
+            {% else %}
+                <p>Phase: <span class="warn">{{ pod.phase }}</span></p>
+            {% endif %}
+        </div>
+        <div class="column-2">
+            <p>IP: {{ pod.ip }}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column-2">
+            <p><b>Conditions:</b></p>
+            <ul>
+                {% for pc in pod.conditions %}
+                    {% if pc.status == 'True' %}
+                        <li><b>Type:</b> {{ pc.type }} <b>Status:</b> <span class="ok">OK</span>
+                            <b>Reason:</b> {{ pc.reason }},
+                            <b>Message:</b> {{ pc.message }}</li>
+                    {% else %}
+                        <li><b>Type:</b> {{ pc.type }} <b>Status:</b> <span class="fail">FAIL</span>
+                            <b>Reason:</b> {{ pc.reason }}, <b>Message:</b> {{ pc.message }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            {% if pod.labels != None %}
+                <p><b>Labels:</b></p>
+                <ul>
+                    {% for l in pod.labels %}
+                        <li>{{ l }} : {{ pod.labels[l] }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="column-2">
+            <p><b>Containers statuses:</b></p>
+            <ul>
+                {% for pcs in pod.containers_statuses %}
+                    <li>
+                        <ul>
+                            <li><b>Name:</b> {{ pcs.name }}</li>
+                            <li>Image: {{ pcs.image }}</li>
+                            {% if pcs.ready %}
+                                <li>Ready: <span class="ok">{{ pcs.ready }}</span></li>
+                            {% else %}
+                                <li>Ready: <span class="fail">{{ pcs.ready }}</span></li>
+                            {% endif %}
+
+                            {% if pcs.restart_count < 5 %}
+                                <li>Restart count: <span class="ok">{{ pcs.restart_count }}</span></li>
+                            {% else %}
+                                <li>Restart count: <span class="warn">{{ pcs.restart_count }}</span></li>
+                            {% endif %}
+
+                            {% if pcs.started_at != None %}
+                                <li>Started at: {{ pcs.started_at }}</li>
+                            {% endif %}
+                            {% if pcs.waiting_reason != None %}
+                                <li>Waiting reason: <span class="fail">{{ pcs.waiting_reason }}</span></li>
+                            {% endif %}
+                            {% if pcs.waiting_message != None %}
+                                <li>Waiting message: {{ pcs.waiting_message }}</li>
+                            {% endif %}
+                            {% if pcs.ready %}
+                                <li>
+                                    <a href="{{ url_for('home.logs',
+                                namespace_name = namespace_name,
+                                pod_name = pod.name,
+                                container_name = pcs.name) }}">Download logs (last 1000 lines)</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+            <p><b>Containers specs:</b></p>
+            <ul>
+                {% for c in pod.containers %}
+                    <li>
+                        <ul>
+                            <li><b>Name:</b> {{ c.name }}</li>
+                            <li>Image: {{ c.image }}</li>
+                            <li>Image pull policy: {{ c.image_pull_policy }}</li>
+                            <li>Command: {{ c.command }}</li>
+                            {% if c.ports %}
+                                <li>Ports:
+                                    <ul>
+                                        {% for p in c.ports %}
+                                            <li>{{ p.protocol }}/{{ p.container_port }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            {% if c.limits %}
+                                <li>Limits:
+                                    <ul>
+                                        {% for l in c.limits %}
+                                            <li>{{ l }} : {{ c.limits[l] }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            {% if c.requests %}
+                                <li>Requests:
+                                    <ul>
+                                        {% for r in c.requests %}
+                                            <li>{{ r }} : {{ c.requests[r] }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            {% if c.environments %}
+                                <li>Environments:
+                                    <ul>
+                                        {% for e in c.environments %}
+                                            {% if e.value != None %}
+                                                <li>{{ e.name }} : {{ e.value }}</li>
+                                            {% elif e.value_from != None %}
+                                                <li>{{ e.name }} : {{ e.value_from }}</li>
+                                            {% else %}
+                                                <li>{{ e.name }} : Undefined</li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

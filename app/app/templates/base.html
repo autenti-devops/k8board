@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta http-equiv="cache-control" content="max-age=0"/>
+<meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="expires" content="0"/>
+<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT"/>
+<meta http-equiv="pragma" content="no-cache"/>
+<title>{% block title %}{% endblock %} - K8Board</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css', q='201906051725') }}">
+<script src="{{ url_for('static', filename='script.js', q='201906051725') }}"></script>
+<nav>
+    <a href="{{ url_for('home.home') }}">Home</a>
+    {% if namespace_name %}
+        <a href="{{ url_for('home.namespace', namespace_name=namespace_name) }}">Current namespace</a>
+    {% endif %}
+</nav>
+<section class="content">
+    {% block content %}{% endblock %}
+</section>

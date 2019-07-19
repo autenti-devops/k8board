@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Namespaces{% endblock %}
+
+{% block content %}
+    <h1>Namespaces: </h1>
+    <ul>
+        {% for ns in namespaces %}
+            <li><a href="{{ url_for('home.namespace', namespace_name=ns) }}">{{ ns }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

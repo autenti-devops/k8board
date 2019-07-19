@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service.name }}{% endblock %}
+
+{% block content %}
+    <h1>Service {{ service.name }}:</h1>
+    <div class="row">
+        <div class="column-2">
+            <p><b>Selectors:</b></p>
+            {% for s in service.selector %}
+                <p>{{ s }} : {{ service.selector[s] }}</p>
+            {% endfor %}
+        </div>
+        <div class="column-2">
+            {% if service.labels != None %}
+                <p><b>Labels:</b></p>
+                {% for l in service.labels %}
+                    <p>{{ l }} : {{ service.labels[l] }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <p>Ports:</p>
+        <ul>
+            {% for p in service.ports %}
+                <li>{{ p.name }} : {{ p.port }} -> {{ p.target_port }} ({{ p.protocol }})</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="row">
+        Related pods:
+        <ul>
+            {% for p in service.pods %}
+                <li>
+                    <a href="{{ url_for('home.pod', namespace_name = namespace_name, pod_name = p.name) }}">{{ p.name }}</a>
+                    : {{ p.phase }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

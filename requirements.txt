@@ -1,0 +1,4 @@
+PyYAML==5.1
+kubernetes==9.0.0
+Flask==1.0.3
+pytest==4.6.4
