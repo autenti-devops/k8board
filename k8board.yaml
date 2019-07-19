@@ -50,10 +50,8 @@ spec:
         app: k8board
     spec:
       serviceAccountName: k8board
-      imagePullSecrets:
-        - name: regcred
       containers:
         - name: k8board
-          image: k8board:latest
+          image: autentidevops/k8board:latest
           ports:
             - containerPort: 80
