@@ -1,4 +1,4 @@
 [uwsgi]
-module = main
+module = app.main
 callable = app
 master = true
